@@ -118,6 +118,7 @@ namespace NMS_Sunstate.NewFolder
         }
         private List<Entity> GetDuplicateRecords(IOrganizationService organizationService, List<Entity> records, Entity bidder)
         {
+            List<Entity> duplicateRecords = null;
             var address = string.Empty;
             var company = string.Empty;
             var phoneNumber = string.Empty;
@@ -137,17 +138,21 @@ namespace NMS_Sunstate.NewFolder
                 address = Convert.ToString(bidder.Attributes["sse_dodge_streetaddress"]);
                 address = HttpUtility.HtmlEncode(address);
             }
-            if(bidder.Attributes.ContainsKey("sse_dodge_contactphone"))
+            if (bidder.Attributes.ContainsKey("sse_dodge_contactphone"))
             {
                 phoneNumber = Convert.ToString(bidder.Attributes["sse_dodge_contactphone"]);
             }
-            string query = String.Format(GetData.GetDuplicateRecords, factorKey, company, address,phoneNumber);
-
-            EntityCollection ec = RetrieveAllRecordsUsingFetchXML(organizationService, query);
-            List<Entity> duplicateRecords = ec.Entities.ToList();
+            if (!string.IsNullOrEmpty(factorKey) || (!string.IsNullOrEmpty(company) && !string.IsNullOrEmpty(address) && !string.IsNullOrEmpty(phoneNumber)))
+            {
+                string query = String.Format(GetData.GetDuplicateRecords, factorKey, company, address, phoneNumber);
+                EntityCollection ec = RetrieveAllRecordsUsingFetchXML(organizationService, query);
+                if (ec != null)
+                {
+                    duplicateRecords = ec.Entities.ToList();
+                }
+            }
             return duplicateRecords;
         }
     }
 }
-
 
