@@ -27,17 +27,29 @@
                     EntityCollection ec_bidders = objbidderbl.GetActiveRecords(organizationService);
                     log.Information("Total Active Bidder Records = " + ec_bidders.Entities.Count() + "\n");
                     Bidder bidder = objbidderbl.ProcessDuplicates(organizationService, ec_bidders);
+
+                    var totalCount = bidder.bidderInformation.Sum(i => i.TotalDuplicates);
+                    var totalActiveRecords = bidder.bidderInformation.Sum(i => i.ActiveBidderCount);
+                    var totalInactiveRecord = bidder.bidderInformation.Sum(i => i.DeactivatedBidderCount);
+                    log.Information("Total Count : " + totalCount);
+                    log.Information("Total Active Records : " + totalActiveRecords);
+                    log.Information("Total Inactive Record : " + totalInactiveRecord + "\n\n");
+
+                    if (totalCount != totalActiveRecords + totalInactiveRecord)
+                    {
+                        foreach (var item in bidder.FailedRecord)
+                        {
+                            log.Information(item);
+                        }
+                    }
                     Console.WriteLine("Process completed");
                 }
-                //else
-                //{
-                //    Console.WriteLine("");
-                //}
                 Console.ReadLine();
             }
             catch (Exception ex)
+            
             {
-                throw ex;
+                throw ;
             }
         }
     }
